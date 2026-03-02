@@ -1,0 +1,897 @@
+<Window x:Class="PACK.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="P.A.C.K — Perfect Auto Clicker &amp; Keyboard"
+        Height="720" Width="1020" MinHeight="620" MinWidth="840"
+        WindowStartupLocation="CenterScreen"
+        Background="#1E1E2E"
+        Icon="icon.ico">
+    <Window.Resources>
+        <SolidColorBrush x:Key="Bg"      Color="#1E1E2E"/>
+        <SolidColorBrush x:Key="Side"    Color="#181825"/>
+        <SolidColorBrush x:Key="Surf"    Color="#313244"/>
+        <SolidColorBrush x:Key="Surf2"   Color="#45475A"/>
+        <SolidColorBrush x:Key="Accent"  Color="#CBA6F7"/>
+        <SolidColorBrush x:Key="AccentD" Color="#9A77C7"/>
+        <SolidColorBrush x:Key="Txt"     Color="#CDD6F4"/>
+        <SolidColorBrush x:Key="Sub"     Color="#A6ADC8"/>
+        <SolidColorBrush x:Key="Green"   Color="#A6E3A1"/>
+        <SolidColorBrush x:Key="Red"     Color="#F38BA8"/>
+        <SolidColorBrush x:Key="Yellow"  Color="#F9E2AF"/>
+        <SolidColorBrush x:Key="Blue"    Color="#89B4FA"/>
+
+        <!-- BoolToVisibility -->
+        <BooleanToVisibilityConverter x:Key="BoolVis"/>
+
+        <!-- TextBox -->
+        <Style TargetType="TextBox">
+            <Setter Property="Background"               Value="{StaticResource Surf}"/>
+            <Setter Property="Foreground"               Value="{StaticResource Txt}"/>
+            <Setter Property="CaretBrush"               Value="{StaticResource Accent}"/>
+            <Setter Property="BorderBrush"              Value="{StaticResource Surf2}"/>
+            <Setter Property="BorderThickness"          Value="1"/>
+            <Setter Property="Padding"                  Value="7,0"/>
+            <Setter Property="FontSize"                 Value="13"/>
+            <Setter Property="FontFamily"               Value="Segoe UI"/>
+            <Setter Property="Height"                   Value="30"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="6">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Accent}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- CheckBox -->
+        <Style TargetType="CheckBox">
+            <Setter Property="Foreground" Value="{StaticResource Txt}"/>
+            <Setter Property="FontSize"   Value="13"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+        </Style>
+
+        <!-- Separator -->
+        <Style TargetType="Separator">
+            <Setter Property="Background" Value="{StaticResource Surf2}"/>
+            <Setter Property="Margin"     Value="0,4"/>
+        </Style>
+
+        <!-- ListBox -->
+        <Style TargetType="ListBox">
+            <Setter Property="Background"      Value="{StaticResource Surf}"/>
+            <Setter Property="Foreground"      Value="{StaticResource Txt}"/>
+            <Setter Property="BorderBrush"     Value="{StaticResource Surf2}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize"        Value="12"/>
+            <Setter Property="FontFamily"      Value="Segoe UI"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="6">
+                            <ScrollViewer Padding="2"><ItemsPresenter/></ScrollViewer>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="ListBoxItem">
+            <Setter Property="Foreground" Value="{StaticResource Txt}"/>
+            <Setter Property="Padding"    Value="8,5"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="Bd" Background="Transparent" CornerRadius="4"
+                                Margin="2,1" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{StaticResource Surf2}"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#3D3A5C"/>
+                                <Setter Property="Foreground" Value="{StaticResource Accent}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Button: Dark -->
+        <Style x:Key="BDark" TargetType="Button">
+            <Setter Property="Background"      Value="{StaticResource Surf}"/>
+            <Setter Property="Foreground"      Value="{StaticResource Txt}"/>
+            <Setter Property="BorderBrush"     Value="{StaticResource Surf2}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding"         Value="12,0"/>
+            <Setter Property="FontSize"        Value="12"/>
+            <Setter Property="FontFamily"      Value="Segoe UI"/>
+            <Setter Property="Height"          Value="30"/>
+            <Setter Property="Cursor"          Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{StaticResource Surf2}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#585B70"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.38"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Button: Accent -->
+        <Style x:Key="BAcc" TargetType="Button">
+            <Setter Property="Background"      Value="{StaticResource Accent}"/>
+            <Setter Property="Foreground"      Value="#1E1E2E"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding"         Value="12,0"/>
+            <Setter Property="FontSize"        Value="12"/>
+            <Setter Property="FontFamily"      Value="Segoe UI"/>
+            <Setter Property="FontWeight"      Value="SemiBold"/>
+            <Setter Property="Height"          Value="30"/>
+            <Setter Property="Cursor"          Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{StaticResource AccentD}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#7A57A7"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.38"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Button: Danger -->
+        <Style x:Key="BDng" TargetType="Button">
+            <Setter Property="Background"      Value="#3D1A1A"/>
+            <Setter Property="Foreground"      Value="{StaticResource Red}"/>
+            <Setter Property="BorderBrush"     Value="#6B2A2A"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding"         Value="12,0"/>
+            <Setter Property="FontSize"        Value="12"/>
+            <Setter Property="FontFamily"      Value="Segoe UI"/>
+            <Setter Property="Height"          Value="30"/>
+            <Setter Property="Cursor"          Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#5A2020"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.38"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Button: Green -->
+        <Style x:Key="BGrn" TargetType="Button">
+            <Setter Property="Background"      Value="#1A3D1A"/>
+            <Setter Property="Foreground"      Value="{StaticResource Green}"/>
+            <Setter Property="BorderBrush"     Value="#2A6B2A"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding"         Value="12,0"/>
+            <Setter Property="FontSize"        Value="12"/>
+            <Setter Property="FontFamily"      Value="Segoe UI"/>
+            <Setter Property="FontWeight"      Value="SemiBold"/>
+            <Setter Property="Height"          Value="30"/>
+            <Setter Property="Cursor"          Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#255525"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.38"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Nav inactive -->
+        <Style x:Key="BNav" TargetType="Button">
+            <Setter Property="Background"                 Value="Transparent"/>
+            <Setter Property="Foreground"                 Value="{StaticResource Sub}"/>
+            <Setter Property="BorderThickness"            Value="0"/>
+            <Setter Property="HorizontalAlignment"        Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Padding"                    Value="14,0,12,0"/>
+            <Setter Property="Height"                     Value="44"/>
+            <Setter Property="FontSize"                   Value="13"/>
+            <Setter Property="FontFamily"                 Value="Segoe UI"/>
+            <Setter Property="Cursor"                     Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock x:Name="Ico" Text="{TemplateBinding Tag}" FontSize="14" Width="22"
+                                           TextAlignment="Center" VerticalAlignment="Center" Margin="0,0,10,0"
+                                           Foreground="{TemplateBinding Foreground}"/>
+                                <ContentPresenter VerticalAlignment="Center"
+                                                  TextBlock.Foreground="{TemplateBinding Foreground}"/>
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd"  Property="Background" Value="#252535"/>
+                                <Setter TargetName="Ico" Property="Foreground" Value="{StaticResource Txt}"/>
+                                <Setter Property="Foreground" Value="{StaticResource Txt}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#2E2E42"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Nav active -->
+        <Style x:Key="BNavA" TargetType="Button">
+            <Setter Property="Background"                 Value="#2E2A3E"/>
+            <Setter Property="Foreground"                 Value="{StaticResource Accent}"/>
+            <Setter Property="BorderThickness"            Value="0"/>
+            <Setter Property="HorizontalAlignment"        Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Padding"                    Value="14,0,12,0"/>
+            <Setter Property="Height"                     Value="44"/>
+            <Setter Property="FontSize"                   Value="13"/>
+            <Setter Property="FontFamily"                 Value="Segoe UI"/>
+            <Setter Property="FontWeight"                 Value="SemiBold"/>
+            <Setter Property="Cursor"                     Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="{TemplateBinding Tag}" FontSize="14" Width="22"
+                                           TextAlignment="Center" VerticalAlignment="Center" Margin="0,0,10,0"
+                                           Foreground="{TemplateBinding Foreground}"/>
+                                <ContentPresenter VerticalAlignment="Center"
+                                                  TextBlock.Foreground="{TemplateBinding Foreground}"/>
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#3D3560"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Card -->
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="Background"      Value="{StaticResource Surf}"/>
+            <Setter Property="BorderBrush"     Value="{StaticResource Surf2}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius"    Value="8"/>
+            <Setter Property="Padding"         Value="14"/>
+        </Style>
+
+        <!-- Hold CheckBox style (compact) -->
+        <Style x:Key="HoldChk" TargetType="CheckBox">
+            <Setter Property="Foreground"  Value="#CBA6F7"/>
+            <Setter Property="FontSize"    Value="11"/>
+            <Setter Property="FontFamily"  Value="Segoe UI"/>
+            <Setter Property="FontWeight"  Value="SemiBold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin"      Value="8,0,0,0"/>
+            <Setter Property="Cursor"      Value="Hand"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="205"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ═══ SIDEBAR ═══ -->
+        <Border Grid.Column="0" Background="{StaticResource Side}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0" Margin="16,20,16,0">
+                    <TextBlock Text="P.A.C.K" FontSize="26" FontWeight="Bold"
+                               Foreground="{StaticResource Accent}" FontFamily="Segoe UI"/>
+                    <TextBlock Text="Perfect Auto Clicker &amp; Keyboard"
+                               Foreground="{StaticResource Sub}" FontSize="11"
+                               FontFamily="Segoe UI" Margin="0,2,0,14" TextWrapping="Wrap"/>
+                    <Separator/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Margin="0,6,0,0">
+                    <Button x:Name="NavMain"     Tag="✦"  Content="Main"         Style="{StaticResource BNavA}" Click="Nav_Click"/>
+                    <Button x:Name="NavLoc"      Tag="⊕"  Content="Locations"    Style="{StaticResource BNav}"  Click="Nav_Click"/>
+                    <Button x:Name="NavSeq"      Tag="≡"  Content="Sequence"     Style="{StaticResource BNav}"  Click="Nav_Click"/>
+                    <Button x:Name="NavApps"     Tag="◉"  Content="Running Apps" Style="{StaticResource BNav}"  Click="Nav_Click"/>
+                    <Button x:Name="NavSettings" Tag="⚙"  Content="Settings"     Style="{StaticResource BNav}"  Click="Nav_Click"/>
+                    <Button x:Name="NavAbout"    Tag="?"  Content="About"        Style="{StaticResource BNav}"  Click="Nav_Click"/>
+                </StackPanel>
+
+                <Border Grid.Row="2" Margin="12,0,12,16" Padding="12,10"
+                        Background="{StaticResource Surf}" BorderBrush="{StaticResource Surf2}"
+                        BorderThickness="1" CornerRadius="8">
+                    <StackPanel>
+                        <TextBlock Text="STATUS" FontSize="10" FontWeight="SemiBold"
+                                   Foreground="{StaticResource Sub}" FontFamily="Segoe UI" Margin="0,0,0,3"/>
+                        <TextBlock x:Name="StatusLabel" Text="Ready" FontSize="13"
+                                   FontFamily="Segoe UI" FontWeight="SemiBold"
+                                   Foreground="{StaticResource Green}"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- ═══ CONTENT ═══ -->
+        <Grid Grid.Column="1" Background="{StaticResource Bg}">
+
+            <!-- ─── MAIN ─── -->
+            <ScrollViewer x:Name="PanelMain" VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="22,16,22,16">
+                    <TextBlock Text="ACTION CONFIGURATION" FontSize="10" FontWeight="SemiBold"
+                               Foreground="{StaticResource Accent}" FontFamily="Segoe UI" Margin="0,0,0,12"/>
+
+                    <!-- Active recording banner -->
+                    <Border x:Name="MainRecordBanner" Visibility="Collapsed"
+                            Background="#1A1030" BorderBrush="{StaticResource Accent}"
+                            BorderThickness="1" CornerRadius="8" Padding="14,10" Margin="0,0,0,12">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Center">
+                                <TextBlock Text="⏺  " FontSize="16" Foreground="{StaticResource Red}"
+                                           VerticalAlignment="Center"/>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="RECORDING ACTIONS…"
+                                               Foreground="{StaticResource Red}"
+                                               FontSize="13" FontWeight="SemiBold" FontFamily="Segoe UI"/>
+                                    <TextBlock x:Name="MainRecordCountLabel" Text="Click or scroll anywhere. Press hotkey to stop."
+                                               Foreground="{StaticResource Sub}"
+                                               FontSize="11" FontFamily="Segoe UI" Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <Button Grid.Column="1" Content="Stop Now" Style="{StaticResource BDng}"
+                                    Height="28" Padding="10,0" VerticalAlignment="Center"
+                                    Margin="12,0,0,0" Click="StopMainRecord_Click"/>
+                        </Grid>
+                    </Border>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="218"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Left column -->
+                        <StackPanel Grid.Column="0">
+
+                            <!-- ── Record Action card (replaces the old Action combo) ── -->
+                            <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                                <StackPanel>
+                                    <Grid Margin="0,0,0,10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="RECORDED ACTIONS" FontSize="10" FontWeight="SemiBold"
+                                                   Foreground="{StaticResource Accent}" FontFamily="Segoe UI"
+                                                   VerticalAlignment="Center"/>
+                                        <CheckBox x:Name="MainRepeatForeverChk" Grid.Column="1"
+                                                  Content="Repeat Forever" VerticalAlignment="Center"/>
+                                    </Grid>
+
+                                    <!-- Record button row -->
+                                    <WrapPanel Margin="0,0,0,10">
+                                        <Button x:Name="RecordActionBtn"
+                                                Content="⏺  Record Action"
+                                                Style="{StaticResource BAcc}"
+                                                Height="36" Padding="14,0" Margin="0,0,8,0"
+                                                Click="RecordActionBtn_Click"
+                                                ToolTip="Requires a hotkey set in Settings. PACK minimizes; perform your actions, then press the hotkey to stop."/>
+                                        <TextBlock x:Name="RecordActionHint" VerticalAlignment="Center"
+                                                   Foreground="{StaticResource Sub}" FontSize="11"
+                                                   FontFamily="Segoe UI"
+                                                   Text="(set a hotkey in Settings first)"/>
+                                    </WrapPanel>
+
+                                    <!-- Recorded actions list with Hold checkboxes -->
+                                    <ListBox x:Name="MainActionListBox" Height="120"
+                                             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Grid.Column="0"
+                                                               Text="{Binding DisplayText}"
+                                                               Foreground="#CDD6F4"
+                                                               FontSize="12" FontFamily="Segoe UI"
+                                                               VerticalAlignment="Center"/>
+                                                    <CheckBox Grid.Column="1"
+                                                              Content="Hold"
+                                                              IsChecked="{Binding Hold, Mode=TwoWay}"
+                                                              Visibility="{Binding IsMouseClick, Converter={StaticResource BoolVis}}"
+                                                              Style="{StaticResource HoldChk}"/>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+
+                                    <!-- Save / clear buttons -->
+                                    <WrapPanel Margin="0,8,0,0">
+                                        <Button Content="Save to Locations"
+                                                Style="{StaticResource BDark}"
+                                                Margin="0,0,6,0" Height="28"
+                                                Click="SaveActionsToLocations_Click"/>
+                                        <Button Content="Save to Sequences"
+                                                Style="{StaticResource BDark}"
+                                                Margin="0,0,6,0" Height="28"
+                                                Click="SaveActionsToSequences_Click"/>
+                                        <Button Content="Clear"
+                                                Style="{StaticResource BDng}"
+                                                Height="28"
+                                                Click="ClearMainActions_Click"/>
+                                    </WrapPanel>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- CPS card -->
+                            <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="145"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="CPS (clicks/sec):"
+                                               Foreground="{StaticResource Txt}" FontSize="13"
+                                               FontFamily="Segoe UI" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Column="1" x:Name="CpsTxt"
+                                             Text="10" Width="110" HorizontalAlignment="Left"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- Randomize card -->
+                            <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                                <StackPanel>
+                                    <CheckBox x:Name="RandomizeChk"
+                                              Content="Randomize interval (add random jitter)"
+                                              Margin="0,0,0,10"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Min ms:" Foreground="{StaticResource Txt}"
+                                                   FontSize="13" FontFamily="Segoe UI"
+                                                   VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                        <TextBox x:Name="RandMinTxt" Text="0" Width="72"/>
+                                        <TextBlock Text="Max ms:" Foreground="{StaticResource Txt}"
+                                                   FontSize="13" FontFamily="Segoe UI"
+                                                   VerticalAlignment="Center" Margin="14,0,6,0"/>
+                                        <TextBox x:Name="RandMaxTxt" Text="10" Width="72"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Click behaviour card -->
+                            <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="10"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="10"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="10"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="185"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <CheckBox Grid.Row="0" Grid.ColumnSpan="2"
+                                              x:Name="DoubleClickChk" Content="Double-click each action"/>
+
+                                    <TextBlock Grid.Row="2" Grid.Column="0"
+                                               Text="Click-and-hold duration (ms):"
+                                               Foreground="{StaticResource Txt}" FontSize="13"
+                                               FontFamily="Segoe UI" VerticalAlignment="Center"
+                                               TextWrapping="Wrap"/>
+                                    <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal"
+                                                VerticalAlignment="Center">
+                                        <TextBox x:Name="HoldMsTxt" Text="0" Width="80"/>
+                                        <TextBlock Text="(0 = normal)" Foreground="{StaticResource Sub}"
+                                                   FontSize="11" FontFamily="Segoe UI"
+                                                   VerticalAlignment="Center" Margin="8,0,0,0"/>
+                                    </StackPanel>
+
+                                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Start delay (seconds):"
+                                               Foreground="{StaticResource Txt}" FontSize="13"
+                                               FontFamily="Segoe UI" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Row="4" Grid.Column="1" x:Name="StartDelaySec"
+                                             Text="0" Width="80" HorizontalAlignment="Left"/>
+
+                                    <TextBlock Grid.Row="6" Grid.Column="0" Text="Target window title:"
+                                               Foreground="{StaticResource Txt}" FontSize="13"
+                                               FontFamily="Segoe UI" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Row="6" Grid.Column="1" x:Name="TargetTitleTxt"
+                                             Width="200" HorizontalAlignment="Left"
+                                             ToolTip="Partial title match. Leave blank to use window selected in Running Apps tab."/>
+                                </Grid>
+                            </Border>
+
+                            <!-- Run controls -->
+                            <WrapPanel Margin="0,2,0,0">
+                                <Button x:Name="RunBtn"  Content="Run"
+                                        Style="{StaticResource BAcc}"
+                                        Width="110" Height="38" Margin="0,0,8,0" Click="RunBtn_Click"/>
+                                <Button x:Name="StopBtn" Content="Stop"
+                                        Style="{StaticResource BDng}"
+                                        Width="110" Height="38" IsEnabled="False"
+                                        Margin="0,0,8,0" Click="StopBtn_Click"/>
+                                <Button Content="Test Once"
+                                        Style="{StaticResource BDark}"
+                                        Width="100" Height="38" Click="TestOnce_Click"/>
+                            </WrapPanel>
+                        </StackPanel>
+
+                        <!-- Right: repeat/timer -->
+                        <Border Grid.Column="2" Style="{StaticResource Card}" VerticalAlignment="Top">
+                            <StackPanel>
+                                <TextBlock Text="REPEAT &amp; TIMER" FontSize="10" FontWeight="SemiBold"
+                                           Foreground="{StaticResource Accent}" FontFamily="Segoe UI"
+                                           Margin="0,0,0,10"/>
+
+                                <CheckBox x:Name="RepForeverChk" Content="Repeat forever"
+                                          IsChecked="True" Margin="0,0,0,12"
+                                          Checked="RepForever_Changed" Unchecked="RepForever_Changed"/>
+
+                                <TextBlock Text="Repeat count (if not forever):"
+                                           Foreground="{StaticResource Txt}" FontSize="12"
+                                           FontFamily="Segoe UI" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                                <TextBox x:Name="RepeatCountTxt" Text="0" IsEnabled="False" Margin="0,0,0,14"/>
+
+                                <Separator Margin="0,0,0,10"/>
+
+                                <TextBlock Text="Timer (seconds):"
+                                           Foreground="{StaticResource Txt}" FontSize="12"
+                                           FontFamily="Segoe UI" Margin="0,0,0,4"/>
+                                <TextBox x:Name="TimerSecTxt" Text="0" Margin="0,0,0,4"/>
+                                <TextBlock Text="0 = run until stopped"
+                                           Foreground="{StaticResource Sub}" FontSize="11"
+                                           FontFamily="Segoe UI"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- ─── LOCATIONS ─── -->
+            <Grid x:Name="PanelLoc" Visibility="Collapsed" Margin="22,16,22,16">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Text="SAVED CLICK LOCATIONS" FontSize="10"
+                           FontWeight="SemiBold" Foreground="{StaticResource Accent}"
+                           FontFamily="Segoe UI"/>
+
+                <Border Grid.Row="2" Background="#1C1C2E" BorderBrush="{StaticResource Surf2}"
+                        BorderThickness="1" CornerRadius="6" Padding="12,8">
+                    <TextBlock TextWrapping="Wrap" Foreground="{StaticResource Sub}"
+                               FontFamily="Segoe UI" FontSize="12">
+                        <Run Text="💡  "/>
+                        <Run Text="Record an action in the " FontStyle="Italic"/>
+                        <Run Text="Main" Foreground="{StaticResource Accent}" FontWeight="SemiBold"/>
+                        <Run Text=" tab and click " FontStyle="Italic"/>
+                        <Run Text="Save to Locations" Foreground="{StaticResource Accent}" FontWeight="SemiBold"/>
+                        <Run Text=" to add entries here." FontStyle="Italic"/>
+                    </TextBlock>
+                </Border>
+
+                <ListBox Grid.Row="4" x:Name="LocListBox"/>
+
+                <WrapPanel Grid.Row="5" Margin="0,10,0,0">
+                    <Button Content="Remove selected" Style="{StaticResource BDark}" Margin="0,0,8,0" Click="LocRemove_Click"/>
+                    <Button Content="Move up"         Style="{StaticResource BDark}" Margin="0,0,8,0" Click="LocMoveUp_Click"/>
+                    <Button Content="Move to top"     Style="{StaticResource BDark}" Margin="0,0,8,0" Click="LocMoveTop_Click"/>
+                    <Button Content="Clear all"       Style="{StaticResource BDng}"                   Click="ClearLocations_Click"/>
+                </WrapPanel>
+            </Grid>
+
+            <!-- ─── SEQUENCE ─── -->
+            <Grid x:Name="PanelSeq" Visibility="Collapsed" Margin="22,16,22,16">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Text="SCRIPT / SEQUENCE BUILDER" FontSize="10"
+                           FontWeight="SemiBold" Foreground="{StaticResource Accent}"
+                           FontFamily="Segoe UI"/>
+
+                <!-- Add/Record buttons -->
+                <WrapPanel Grid.Row="2">
+                    <Button Content="⏺ Record Sequence"  Style="{StaticResource BAcc}"  Margin="0,0,8,4" Click="SeqRecord_Click"
+                            ToolTip="Open real-time recorder — captures mouse clicks and key presses"/>
+                    <Button Content="+ Click"             Style="{StaticResource BDark}" Margin="0,0,8,4" Click="SeqAddClick_Click"/>
+                    <Button Content="+ Key"               Style="{StaticResource BDark}" Margin="0,0,8,4" Click="SeqAddKey_Click"/>
+                    <Button Content="+ Wait"              Style="{StaticResource BDark}" Margin="0,0,8,4" Click="SeqAddWait_Click"/>
+                    <Button Content="Import locations"    Style="{StaticResource BDark}" Margin="0,0,8,4"
+                            Click="SeqImportLoc_Click"
+                            ToolTip="Convert all saved locations into a click sequence"/>
+                    <Button Content="Clear"               Style="{StaticResource BDng}"  Margin="0,0,0,4" Click="SeqClear_Click"/>
+                </WrapPanel>
+
+                <ListBox Grid.Row="4" x:Name="SeqListBox"/>
+
+                <!-- Bottom action row -->
+                <WrapPanel Grid.Row="5" Margin="0,10,0,0">
+                    <Button Content="Remove selected" Style="{StaticResource BDark}" Margin="0,0,8,0" Click="SeqRemove_Click"/>
+                    <Button Content="Move up"         Style="{StaticResource BDark}" Margin="0,0,8,0" Click="SeqMoveUp_Click"/>
+                    <Button Content="Move down"       Style="{StaticResource BDark}" Margin="0,0,8,0" Click="SeqMoveDown_Click"/>
+                </WrapPanel>
+
+                <!-- Run / Export / Save row -->
+                <WrapPanel Grid.Row="7">
+                    <Button Content="▶ Run Sequence"
+                            Style="{StaticResource BGrn}"
+                            Height="34" Padding="16,0" Margin="0,0,8,0"
+                            Click="SeqRun_Click"
+                            ToolTip="Run the sequence once"/>
+                    <Button Content="⏹ Stop"
+                            x:Name="SeqStopBtn"
+                            Style="{StaticResource BDng}"
+                            Height="34" Padding="14,0" Margin="0,0,8,0"
+                            IsEnabled="False"
+                            Click="SeqStopBtn_Click"/>
+                    <Button Content="💾 Save Sequence…"
+                            Style="{StaticResource BDark}"
+                            Height="34" Padding="14,0" Margin="0,0,8,0"
+                            Click="SeqSave_Click"
+                            ToolTip="Save sequence to a .json file"/>
+                    <Button Content="📂 Load Sequence…"
+                            Style="{StaticResource BDark}"
+                            Height="34" Padding="14,0" Margin="0,0,8,0"
+                            Click="SeqLoad_Click"
+                            ToolTip="Load a previously saved .json sequence"/>
+                    <Button Content="📤 Export as Text…"
+                            Style="{StaticResource BDark}"
+                            Height="34" Padding="14,0"
+                            Click="SeqExport_Click"
+                            ToolTip="Export sequence steps as a readable text file"/>
+                </WrapPanel>
+            </Grid>
+
+            <!-- ─── RUNNING APPS ─── -->
+            <Grid x:Name="PanelApps" Visibility="Collapsed" Margin="22,16,22,16">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Text="CHOOSE TARGET WINDOW" FontSize="10"
+                           FontWeight="SemiBold" Foreground="{StaticResource Accent}"
+                           FontFamily="Segoe UI"/>
+
+                <WrapPanel Grid.Row="2">
+                    <Button Content="Refresh"           Style="{StaticResource BDark}" Margin="0,0,8,0" Click="AppsRefresh_Click"/>
+                    <Button Content="Select by .exe..." Style="{StaticResource BDark}" Margin="0,0,14,0" Click="AppsSelectExe_Click"/>
+                    <TextBlock Text="Double-click an entry to select it as target."
+                               Foreground="{StaticResource Sub}" FontSize="12" FontFamily="Segoe UI"
+                               VerticalAlignment="Center"/>
+                </WrapPanel>
+
+                <ListBox Grid.Row="4" x:Name="AppsListBox" MouseDoubleClick="AppsListBox_DoubleClick"/>
+
+                <WrapPanel Grid.Row="5" Margin="0,10,0,0">
+                    <Button Content="Use selected"  Style="{StaticResource BAcc}" Margin="0,0,8,0" Click="AppsUse_Click"/>
+                    <Button Content="Show exe path" Style="{StaticResource BDark}"                 Click="AppsShowExe_Click"/>
+                </WrapPanel>
+            </Grid>
+
+            <!-- ─── SETTINGS ─── -->
+            <ScrollViewer x:Name="PanelSettings" Visibility="Collapsed"
+                          VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="22,16,22,16">
+                    <TextBlock Text="SETTINGS" FontSize="10" FontWeight="SemiBold"
+                               Foreground="{StaticResource Accent}" FontFamily="Segoe UI"
+                               Margin="0,0,0,12"/>
+
+                    <Border Style="{StaticResource Card}" Margin="0,0,0,12">
+                        <StackPanel>
+                            <TextBlock Text="HOTKEY" FontSize="10" FontWeight="SemiBold"
+                                       Foreground="{StaticResource Accent}" FontFamily="Segoe UI"
+                                       Margin="0,0,0,10"/>
+                            <TextBlock TextWrapping="Wrap" Foreground="{StaticResource Sub}"
+                                       FontFamily="Segoe UI" FontSize="12" LineHeight="20"
+                                       Margin="0,0,0,14"
+                                       Text="This hotkey works anywhere — even while PACK is minimized. It starts/stops recording (background sequence recording or the Main tab Record Action). When recording starts, PACK automatically minimizes."/>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+                                <TextBlock Text="Current hotkey:" Foreground="{StaticResource Txt}"
+                                           FontSize="13" FontFamily="Segoe UI"
+                                           VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                <Border Background="{StaticResource Bg}" BorderBrush="{StaticResource Surf2}"
+                                        BorderThickness="1" CornerRadius="6" Padding="12,5" MinWidth="150">
+                                    <TextBlock x:Name="HotkeyLabel" Text="(none set)"
+                                               Foreground="{StaticResource Accent}"
+                                               FontSize="13" FontFamily="Consolas"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+                            </StackPanel>
+
+                            <WrapPanel>
+                                <Button Content="Set Hotkey…"  Style="{StaticResource BDark}"
+                                        Margin="0,0,8,0" Click="SetHotkey_Click"/>
+                                <Button Content="Clear Hotkey" Style="{StaticResource BDng}"
+                                        Click="ClearHotkey_Click"/>
+                            </WrapPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Live bg-recording status card -->
+                    <Border x:Name="BgRecordCard" Visibility="Collapsed"
+                            Background="#1F0808" BorderBrush="{StaticResource Red}"
+                            BorderThickness="1" CornerRadius="8" Padding="14,12">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Center">
+                                <TextBlock Text="⏺  " FontSize="16" Foreground="{StaticResource Red}"
+                                           VerticalAlignment="Center"/>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="RECORDING IN PROGRESS"
+                                               Foreground="{StaticResource Red}"
+                                               FontSize="13" FontWeight="SemiBold" FontFamily="Segoe UI"/>
+                                    <TextBlock x:Name="BgRecordCountLabel" Text="0 actions captured"
+                                               Foreground="{StaticResource Sub}"
+                                               FontSize="11" FontFamily="Segoe UI" Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <Button Grid.Column="1" Content="Stop Now" Style="{StaticResource BDng}"
+                                    VerticalAlignment="Center" Click="StopBgRecord_Click"/>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- ─── ABOUT ─── -->
+            <ScrollViewer x:Name="PanelAbout" Visibility="Collapsed"
+                          VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="22,16,22,16">
+                    <TextBlock Text="ABOUT P.A.C.K" FontSize="10" FontWeight="SemiBold"
+                               Foreground="{StaticResource Accent}" FontFamily="Segoe UI"
+                               Margin="0,0,0,12"/>
+
+                    <Border Style="{StaticResource Card}" Margin="0,0,0,12">
+                        <StackPanel>
+                            <TextBlock Text="P.A.C.K" FontSize="26" FontWeight="Bold"
+                                       Foreground="{StaticResource Accent}" FontFamily="Segoe UI"/>
+                            <TextBlock Text="Perfect Auto Clicker &amp; Keyboard"
+                                       FontSize="14" Foreground="{StaticResource Txt}"
+                                       FontFamily="Segoe UI" Margin="0,3,0,14"/>
+                            <TextBlock TextWrapping="Wrap" Foreground="{StaticResource Sub}"
+                                       FontFamily="Segoe UI" FontSize="13" LineHeight="22"
+                                       Text="P.A.C.K injects mouse and keyboard input via the Windows SendInput API using scan-code injection for maximum compatibility inside games and elevated applications."/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource Card}" Margin="0,0,0,12">
+                        <StackPanel>
+                            <TextBlock Text="CONTACT" FontSize="10" FontWeight="SemiBold"
+                                       Foreground="{StaticResource Accent}" FontFamily="Segoe UI"
+                                       Margin="0,0,0,8"/>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Developer:" Foreground="{StaticResource Txt}"
+                                           FontSize="13" FontFamily="Segoe UI"
+                                           VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                <Button Content="ashmandeadwarf@gmail.com"
+                                        Style="{StaticResource BDark}" Click="ContactEmail_Click"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource Card}">
+                        <StackPanel>
+                            <TextBlock Text="DISCLAIMER" FontSize="10" FontWeight="SemiBold"
+                                       Foreground="{StaticResource Yellow}" FontFamily="Segoe UI"
+                                       Margin="0,0,0,8"/>
+                            <TextBlock TextWrapping="Wrap" Foreground="{StaticResource Sub}"
+                                       FontFamily="Segoe UI" FontSize="13" LineHeight="22"
+                                       Text="Use responsibly. Do not attempt to bypass anti-cheat systems or violate server/game rules. Run as Administrator for best compatibility inside games and elevated applications."/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+        </Grid>
+    </Grid>
+</Window>
