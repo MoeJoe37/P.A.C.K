@@ -715,11 +715,36 @@
 
                 <!-- Run / Export / Save row -->
                 <WrapPanel Grid.Row="7">
-                    <Button Content="▶ Run Sequence"
-                            Style="{StaticResource BGrn}"
-                            Height="34" Padding="16,0" Margin="0,0,8,0"
-                            Click="SeqRun_Click"
-                            ToolTip="Run the sequence once"/>
+                    <!-- Split Run Sequence button -->
+                    <Grid Height="34" Margin="0,0,8,0" VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="1"/>
+                            <ColumnDefinition Width="30"/>
+                        </Grid.ColumnDefinitions>
+                        <!-- shared green background border -->
+                        <Border Grid.ColumnSpan="3" Background="#1A3D1A" BorderBrush="#2A6B2A"
+                                BorderThickness="1" CornerRadius="6"/>
+                        <!-- main run button -->
+                        <Button Grid.Column="0" x:Name="SeqRunMainBtn"
+                                Content="▶  Run Sequence"
+                                Background="Transparent" Foreground="#A6E3A1"
+                                BorderThickness="0" FontFamily="Segoe UI"
+                                FontWeight="SemiBold" FontSize="12"
+                                Height="34" Padding="14,0,10,0" Cursor="Hand"
+                                Click="SeqRun_Click"
+                                ToolTip="Run the sequence (app minimizes while running)"/>
+                        <!-- divider -->
+                        <Rectangle Grid.Column="1" Fill="#2A6B2A"/>
+                        <!-- dropdown arrow button -->
+                        <Button Grid.Column="2" x:Name="SeqRunDropBtn"
+                                Content="▾"
+                                Background="Transparent" Foreground="#A6E3A1"
+                                BorderThickness="0" FontFamily="Segoe UI" FontSize="15"
+                                Height="34" Width="30" Cursor="Hand"
+                                Click="SeqRunDropdown_Click"
+                                ToolTip="Set run duration / deadline / repeat count (requires hotkey)"/>
+                    </Grid>
                     <Button Content="⏹ Stop"
                             x:Name="SeqStopBtn"
                             Style="{StaticResource BDng}"

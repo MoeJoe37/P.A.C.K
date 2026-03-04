@@ -1,0 +1,78 @@
+<Window x:Class="PACK.DateTimePickerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Select Deadline"
+        Width="334" Height="352"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="#1E1E2E"
+        FontFamily="Segoe UI">
+
+    <Border BorderBrush="#45475A" BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>   <!-- nav header, collapses in time view -->
+                <RowDefinition Height="*"/>       <!-- dynamic content -->
+                <RowDefinition Height="1"/>       <!-- divider -->
+                <RowDefinition Height="46"/>      <!-- footer -->
+            </Grid.RowDefinitions>
+
+            <!-- ═══ NAV HEADER (Days / Months / Years views) ═══ -->
+            <Grid x:Name="NavHeader" Grid.Row="0" Height="46" Background="#1E1E2E">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="44"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="44"/>
+                </Grid.ColumnDefinitions>
+
+                <Button x:Name="PrevBtn" Grid.Column="0"
+                        Content="‹" FontSize="20"
+                        Background="Transparent" Foreground="#CDD6F4"
+                        BorderThickness="0" Cursor="Hand"
+                        VerticalAlignment="Stretch"
+                        Click="Prev_Click"/>
+
+                <Button x:Name="TitleBtn" Grid.Column="1"
+                        FontSize="14" FontWeight="SemiBold"
+                        Background="Transparent" Foreground="#CDD6F4"
+                        BorderThickness="0" Cursor="Hand"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Click="Title_Click"/>
+
+                <Button x:Name="NextBtn" Grid.Column="2"
+                        Content="›" FontSize="20"
+                        Background="Transparent" Foreground="#CDD6F4"
+                        BorderThickness="0" Cursor="Hand"
+                        VerticalAlignment="Stretch"
+                        Click="Next_Click"/>
+            </Grid>
+
+            <!-- ═══ CONTENT (populated by code-behind) ═══ -->
+            <Grid x:Name="ContentHost" Grid.Row="1" Margin="8,2,8,4"/>
+
+            <!-- ═══ DIVIDER ═══ -->
+            <Rectangle Grid.Row="2" Fill="#45475A"/>
+
+            <!-- ═══ FOOTER ═══ -->
+            <Grid Grid.Row="3" Background="#1E1E2E">
+                <!-- Left: clock / calendar toggle -->
+                <Button x:Name="FooterToggleBtn"
+                        HorizontalAlignment="Left" VerticalAlignment="Center"
+                        Margin="16,0" Width="32" Height="32"
+                        Background="Transparent" Foreground="#A6ADC8"
+                        BorderThickness="0" FontSize="17" Cursor="Hand"
+                        Click="FooterToggle_Click"/>
+
+                <!-- Right: confirm checkmark -->
+                <Button x:Name="OkBtn"
+                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Margin="16,0" Width="32" Height="32"
+                        Background="Transparent" Foreground="#A6E3A1"
+                        BorderThickness="0" FontSize="18" FontWeight="Bold"
+                        Content="✓" Cursor="Hand"
+                        Click="Ok_Click"/>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

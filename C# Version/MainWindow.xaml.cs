@@ -713,35 +713,167 @@ namespace PACK
 
         // ── Sequence tab: Run / Stop / Save / Load / Export ───────────────────
 
+        // ── Sequence run mode enum ────────────────────────────────────────────
+        private enum SeqRunMode { Once, Duration, Deadline, Repeat }
+
+        // ── Dropdown: show timed-run options ─────────────────────────────────
+        private void SeqRunDropdown_Click(object s, RoutedEventArgs e)
+        {
+            bool hasHotkey = _hotkeyVkList != null;
+            var menu = new System.Windows.Controls.ContextMenu();
+
+            if (!hasHotkey)
+            {
+                menu.Items.Add(new System.Windows.Controls.MenuItem
+                {
+                    Header = "⚠  Set a hotkey first in Settings — required to stop timed runs",
+                    IsEnabled = false,
+                    FontSize = 11
+                });
+                menu.Items.Add(new System.Windows.Controls.Separator());
+            }
+
+            var durItem = new System.Windows.Controls.MenuItem
+            {
+                Header = "⏱   Run for duration (seconds)…",
+                IsEnabled = hasHotkey
+            };
+            durItem.Click += (_, _) => SeqRunByDuration_Click();
+
+            var dlItem = new System.Windows.Controls.MenuItem
+            {
+                Header = "📅   Run until deadline (yy,mm,dd,hh,mm,ss)…",
+                IsEnabled = hasHotkey
+            };
+            dlItem.Click += (_, _) => SeqRunByDeadline_Click();
+
+            var repItem = new System.Windows.Controls.MenuItem
+            {
+                Header = "🔁   Run N times (repeat count)…",
+                IsEnabled = hasHotkey
+            };
+            repItem.Click += (_, _) => SeqRunByRepeat_Click();
+
+            menu.Items.Add(durItem);
+            menu.Items.Add(dlItem);
+            menu.Items.Add(repItem);
+
+            menu.PlacementTarget = SeqRunDropBtn;
+            menu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
+            menu.IsOpen = true;
+        }
+
+        private void SeqRunByDuration_Click()
+        {
+            if (!CheckSeqRunPreconditions()) return;
+            var inp = new SimpleInputWindow("Run by Duration", "Run sequence for how many seconds?", "10") { Owner = this };
+            if (inp.ShowDialog() != true || !double.TryParse(inp.Result, out double secs) || secs <= 0)
+            { MessageBox.Show("Enter a valid positive number of seconds.", "Invalid", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
+            StartSeqRun(SeqRunMode.Duration, secs, DateTime.MinValue, 0);
+        }
+
+        private void SeqRunByDeadline_Click()
+        {
+            if (!CheckSeqRunPreconditions()) return;
+            var picker = new DateTimePickerWindow(DateTime.Now.AddMinutes(5)) { Owner = this };
+            if (picker.ShowDialog() != true || picker.SelectedDateTime == null) return;
+            var deadline = picker.SelectedDateTime.Value;
+            if (deadline <= DateTime.Now)
+            { MessageBox.Show("Deadline must be in the future.", "Invalid", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
+            StartSeqRun(SeqRunMode.Deadline, 0, deadline, 0);
+        }
+
+        private void SeqRunByRepeat_Click()
+        {
+            if (!CheckSeqRunPreconditions()) return;
+            var inp = new SimpleInputWindow("Run N Times", "How many times should the sequence repeat?", "5") { Owner = this };
+            if (inp.ShowDialog() != true || !int.TryParse(inp.Result, out int count) || count <= 0)
+            { MessageBox.Show("Enter a valid positive number.", "Invalid", MessageBoxButton.OK, MessageBoxImage.Warning); return; }
+            StartSeqRun(SeqRunMode.Repeat, 0, DateTime.MinValue, count);
+        }
+
+        private bool CheckSeqRunPreconditions()
+        {
+            if (_hotkeyVkList == null)
+            {
+                MessageBox.Show(
+                    "Please set a hotkey in the Settings tab first.\n" +
+                    "The hotkey is required to stop timed runs.",
+                    "No Hotkey Set", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+            if (_seqRunning)
+            { MessageBox.Show("A sequence is already running.", "Already Running", MessageBoxButton.OK, MessageBoxImage.Warning); return false; }
+            if (_sequence.Count == 0)
+            { MessageBox.Show("Sequence is empty.", "Nothing to run", MessageBoxButton.OK, MessageBoxImage.Information); return false; }
+            return true;
+        }
+
+
         private void SeqRun_Click(object s, RoutedEventArgs e)
         {
             if (_seqRunning) return;
             if (_sequence.Count == 0)
             { MessageBox.Show("Sequence is empty.", "Nothing to run", MessageBoxButton.OK, MessageBoxImage.Information); return; }
+            StartSeqRun(SeqRunMode.Once, 0, DateTime.MinValue, 0);
+        }
 
+        private void StartSeqRun(SeqRunMode mode, double durationSecs, DateTime deadline, int repeatCount)
+        {
             var seq   = new List<SequenceItem>(_sequence);
             bool dbl  = GetDoubleClick();
             int hldMs = GetHoldMs();
+
             _seqRunning = true;
             _seqCts     = new CancellationTokenSource();
-            SeqStopBtn.IsEnabled = true;
-            SetStatus("Running sequence…", "#F38BA8");
+
+            Dispatcher.Invoke(() => { SeqStopBtn.IsEnabled = true; });
+
+            string statusMsg = mode switch
+            {
+                SeqRunMode.Duration => $"Running sequence for {durationSecs}s… (press {_hotkeyDisplay} to stop)",
+                SeqRunMode.Deadline => $"Running sequence until {deadline:HH:mm:ss}… (press {_hotkeyDisplay} to stop)",
+                SeqRunMode.Repeat   => $"Running sequence {repeatCount}× (press {_hotkeyDisplay} to stop)",
+                _                   => "Running sequence…"
+            };
+            SetStatus(statusMsg, "#F38BA8");
+
+            // Minimise so the user's desktop is clear while the sequence runs
+            Dispatcher.Invoke(() => WindowState = WindowState.Minimized);
 
             var token = _seqCts.Token;
             new Thread(() =>
             {
                 IntPtr hwnd = GetTargetHwnd();
                 if (hwnd != IntPtr.Zero) WindowHelper.BringToForeground(hwnd);
-                RunSequenceOnce(seq, hwnd, dbl, hldMs, token);
+
+                var sw       = Stopwatch.StartNew();
+                int executed = 0;
+
+                bool ShouldContinue() => mode switch
+                {
+                    SeqRunMode.Duration => sw.Elapsed.TotalSeconds < durationSecs,
+                    SeqRunMode.Deadline => DateTime.Now < deadline,
+                    SeqRunMode.Repeat   => executed < repeatCount,
+                    _                   => executed < 1   // Once
+                };
+
+                while (!token.IsCancellationRequested && ShouldContinue())
+                {
+                    RunSequenceOnce(seq, hwnd, dbl, hldMs, token);
+                    executed++;
+                }
+
                 _seqRunning = false;
                 Dispatcher.Invoke(() =>
                 {
                     SeqStopBtn.IsEnabled = false;
                     SetStatus("Done", "#A6E3A1");
-                    // FEATURE 3 — restore window after sequence finishes
                     if (WindowState == WindowState.Minimized)
+                    {
                         WindowState = WindowState.Normal;
-                    Activate();
+                        Activate();
+                    }
                 });
             })
             { IsBackground = true }.Start();
@@ -1036,9 +1168,20 @@ namespace PACK
             {
                 StopBgRecording();
             }
+            else if (_seqRunning)
+            {
+                // Hotkey immediately stops any timed/counted/once sequence run
+                _seqCts?.Cancel();
+                // Thread will restore window and reset UI when it exits
+            }
+            else if (_running)
+            {
+                // Hotkey also stops the Main-tab automation loop
+                _cts?.Cancel();
+            }
             else
             {
-                // FEATURE 2 — minimize when hotkey starts bg sequence recording
+                // Nothing active → start background sequence recording
                 WindowState = WindowState.Minimized;
                 StartBgRecording();
             }
